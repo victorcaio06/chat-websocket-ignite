@@ -1,3 +1,7 @@
 import { App } from './app';
+import './websocket/chatService';
 
-new App();
+const app = App.getInstance();
+
+app.listenHttpServer();
+app.openConnectionWebSocket();
