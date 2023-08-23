@@ -1,7 +1,11 @@
 import express, { Application } from 'express';
-import http, { createServer } from 'http';
-import { Server } from 'socket.io';
+import http from 'http';
+import mongoose from 'mongoose';
 import path from 'path';
+import { Server } from 'socket.io';
+import dotenv from 'dotenv';
+import { connectMongoDb } from './infra/database/mongodb';
+import { errorMiddleware } from './middlewares/error.middleware';
 
 export class App {
   private static instance: App;
@@ -15,7 +19,9 @@ export class App {
     this.http = new http.Server(this.app);
     this.io = new Server(this.http);
 
-    this.initializeHtml()
+    this.middlewaresInitialize();
+    this.interceptionError();
+    this.initializeHtml();
   }
 
   public static getInstance(): App {
@@ -33,8 +39,18 @@ export class App {
   }
 
   public listenHttpServer() {
-    this.http.listen(3333, () => {
-      console.log('🚀 Server is running on port 3333');
+    this.http.listen(3333, async () => {
+      try {
+        dotenv.config();
+
+        await connectMongoDb();
+        console.log('🚀 ~ Server is running on port 3333');
+      } catch (error) {
+        console.log(
+          '🚀 ~ file: app.ts:48 ~ App ~ this.http.listen ~ error:',
+          error
+        );
+      }
     });
   }
 
@@ -49,5 +65,14 @@ export class App {
 
   private initializeHtml() {
     this.app.use(express.static(path.join(__dirname, '..', 'public')));
+  }
+
+  private middlewaresInitialize() {
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+  }
+
+  private interceptionError() {
+    this.app.use(errorMiddleware);
   }
 }

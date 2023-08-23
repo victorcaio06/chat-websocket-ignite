@@ -1,4 +1,5 @@
 import { App } from './app';
+
 import './websocket/chatService';
 
 const app = App.getInstance();
