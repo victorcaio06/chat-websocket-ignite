@@ -18,6 +18,6 @@ const ChatRoomSchema = new mongoose.Schema({
   id_chat_room: { type: String, default: randomUUID() },
 });
 
-const Chat = mongoose.model<ChatRoom>('ChatRoom', ChatRoomSchema);
+const ChatRoom = mongoose.model<ChatRoom>('ChatRoom', ChatRoomSchema);
 
-export { Chat };
+export { ChatRoom };

@@ -139,7 +139,7 @@ document.getElementById('users_list').addEventListener('click', (e) => {
     }
 
     socket.emit('start_chat', { idUser }, (response) => {
-      idChatRoom = response.room.idChatRoom;
+      idChatRoom = response.room.id_chat_room;
 
       response.messages.forEach((message) => {
         const data = {
