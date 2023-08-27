@@ -1,5 +1,6 @@
 import { App } from '../app';
 import { makeCreateUserService } from '../factories/make-create-user-service';
+import { makeGetAllUsersService } from '../factories/make-get-all-users-service';
 
 const { io } = App.getInstance();
 
@@ -16,6 +17,14 @@ io.on('connection', (socket) => {
       socket_id: socket.id,
     });
 
-    console.log('🚀 ~ file: chatService.ts:18 ~ socket.on ~ user:', user);
+    socket.broadcast.emit('new_users', user);
+  });
+
+  socket.on('get_users', async (callback) => {
+    const getAllUsersService =  makeGetAllUsersService();
+
+    const users = await getAllUsersService.execute();
+
+    callback(users);
   });
 });
