@@ -2,6 +2,7 @@ import { App } from '../app';
 import { makeCreateChatRoomService } from '../factories/make-create-chat-room-service';
 import { makeCreateUserService } from '../factories/make-create-user-service';
 import { makeGetAllUsersService } from '../factories/make-get-all-users-service';
+import { makeGetChatRoomByUsersService } from '../factories/make-get-chat-room-by-users-service';
 import { makeGetUserBySocketIdService } from '../factories/make-get-user-by-socket-id-service';
 
 const { io } = App.getInstance();
@@ -31,19 +32,22 @@ io.on('connection', (socket) => {
   });
 
   socket.on('start_chat', async (data, callback) => {
-    console.log('🚀 ~ file: chatService.ts:34 ~ socket.on ~ data:', data);
     const createChatRoomService = makeCreateChatRoomService();
 
     const getUserBySocketIdService = makeGetUserBySocketIdService();
 
     const userLogged = await getUserBySocketIdService.execute(socket.id);
 
-    const room = await createChatRoomService.execute([
+    const getChatRoomByUsersService = makeGetChatRoomByUsersService();
+
+    let room = await getChatRoomByUsersService.execute([
       data.idUser,
-      userLogged._id,
+      userLogged.id,
     ]);
 
-    console.log('🚀 ~ file: chatService.ts:44 ~ socket.on ~ room:', room);
+    if (!room) {
+      room = await createChatRoomService.execute([data.idUser, userLogged._id]);
+    }
 
     callback({ room });
   });
