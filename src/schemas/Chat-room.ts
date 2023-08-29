@@ -5,7 +5,7 @@ import { User } from './User';
 
 type ChatRoom = Document & {
   id_users: User[];
-  id_chat_room: String;
+  id_chat_room: string;
 };
 
 const ChatRoomSchema = new mongoose.Schema({

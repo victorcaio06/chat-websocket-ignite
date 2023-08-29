@@ -1,5 +1,6 @@
 import { App } from '../app';
 import { makeCreateChatRoomService } from '../factories/make-create-chat-room-service';
+import { makeCreateMessageService } from '../factories/make-create-message-service';
 import { makeCreateUserService } from '../factories/make-create-user-service';
 import { makeGetAllUsersService } from '../factories/make-get-all-users-service';
 import { makeGetChatRoomByUsersService } from '../factories/make-get-chat-room-by-users-service';
@@ -49,6 +50,27 @@ io.on('connection', (socket) => {
       room = await createChatRoomService.execute([data.idUser, userLogged._id]);
     }
 
+    socket.join(room.id_chat_room);
+
     callback({ room });
+  });
+
+  socket.on('message', async (data) => {
+    const getUserBySocketIdService = makeGetUserBySocketIdService();
+
+    const user = await getUserBySocketIdService.execute(socket.id);
+
+    const createMessageService = makeCreateMessageService();
+
+    const message = await createMessageService.execute({
+      to: user._id,
+      text: data.message,
+      roomId: data.idChatRoom,
+    });
+
+    io.to(data.idChatRoom).emit('message', {
+      message,
+      user,
+    });
   });
 });
