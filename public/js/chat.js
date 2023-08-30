@@ -62,9 +62,9 @@ function onLoad() {
 
   socket.on('message', (data) => {
     console.log('🚀 ~ file: chat.js:64 ~ socket.on ~ data:', data);
-    // if (data.message.roomId === idChatRoom) {
-    //   addMessage(data);
-    // }
+    if (data.message.room_id === idChatRoom) {
+      addMessage(data);
+    }
   });
 
   socket.on('notification', (data) => {
@@ -140,6 +140,7 @@ document.getElementById('users_list').addEventListener('click', (e) => {
     }
 
     socket.emit('start_chat', { idUser }, (response) => {
+      console.log('🚀 ~ file: chat.js:143 ~ socket.emit ~ response:', response);
       idChatRoom = response.room.id_chat_room;
 
       response.messages.forEach((message) => {

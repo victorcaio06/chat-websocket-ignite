@@ -4,6 +4,7 @@ import { makeCreateMessageService } from '../factories/make-create-message-servi
 import { makeCreateUserService } from '../factories/make-create-user-service';
 import { makeGetAllUsersService } from '../factories/make-get-all-users-service';
 import { makeGetChatRoomByUsersService } from '../factories/make-get-chat-room-by-users-service';
+import { makeGetMessagesByChatRoomService } from '../factories/make-get-messages-by-chat-room-service';
 import { makeGetUserBySocketIdService } from '../factories/make-get-user-by-socket-id-service';
 
 const { io } = App.getInstance();
@@ -37,6 +38,8 @@ io.on('connection', (socket) => {
 
     const getUserBySocketIdService = makeGetUserBySocketIdService();
 
+    const getMessagesByChatRoomService = makeGetMessagesByChatRoomService();
+
     const userLogged = await getUserBySocketIdService.execute(socket.id);
 
     const getChatRoomByUsersService = makeGetChatRoomByUsersService();
@@ -52,7 +55,11 @@ io.on('connection', (socket) => {
 
     socket.join(room.id_chat_room);
 
-    callback({ room });
+    const messages = await getMessagesByChatRoomService.execute(room.id_chat_room);
+
+    
+
+    callback({ room, messages });
   });
 
   socket.on('message', async (data) => {
