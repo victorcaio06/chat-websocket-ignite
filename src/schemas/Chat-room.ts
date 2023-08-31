@@ -15,7 +15,7 @@ const ChatRoomSchema = new mongoose.Schema({
       ref: 'Users',
     },
   ],
-  id_chat_room: { type: String, default: randomUUID() },
+  id_chat_room: { type: String, default: randomUUID },
 });
 
 const ChatRoom = mongoose.model<ChatRoom>('ChatRoom', ChatRoomSchema);

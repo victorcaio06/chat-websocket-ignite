@@ -140,7 +140,11 @@ document.getElementById('users_list').addEventListener('click', (e) => {
     }
 
     socket.emit('start_chat', { idUser }, (response) => {
-      console.log('🚀 ~ file: chat.js:143 ~ socket.emit ~ response:', response);
+      console.log(
+        '🚀 ~ file: chat.js:143 ~ socket.emit ~ response:',
+        response.room.id_chat_room
+      );
+
       idChatRoom = response.room.id_chat_room;
 
       response.messages.forEach((message) => {
