@@ -45,7 +45,7 @@ function onLoad() {
     }
   });
 
-  socket.on('notification', (data) => {
+  socket.on('emitNotification', (data) => {
     if (data.roomId !== idChatRoom) {
       const user = document.getElementById(`user_${data.from._id}`);
 

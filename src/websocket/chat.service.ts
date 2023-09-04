@@ -3,6 +3,7 @@ import { makeCreateChatRoomService } from '../factories/make-create-chat-room-se
 import { makeCreateMessageService } from '../factories/make-create-message-service';
 import { makeCreateUserService } from '../factories/make-create-user-service';
 import { makeGetAllUsersService } from '../factories/make-get-all-users-service';
+import { makeGetChatRoomByIdService } from '../factories/make-get-chat-room-by-id-service';
 import { makeGetChatRoomByUsersService } from '../factories/make-get-chat-room-by-users-service';
 import { makeGetMessagesByChatRoomService } from '../factories/make-get-messages-by-chat-room-service';
 import { makeGetUserBySocketIdService } from '../factories/make-get-user-by-socket-id-service';
@@ -55,9 +56,9 @@ io.on('connection', (socket) => {
 
     socket.join(room.id_chat_room);
 
-    const messages = await getMessagesByChatRoomService.execute(room.id_chat_room);
-
-    
+    const messages = await getMessagesByChatRoomService.execute(
+      room.id_chat_room
+    );
 
     callback({ room, messages });
   });
@@ -78,6 +79,18 @@ io.on('connection', (socket) => {
     io.to(data.idChatRoom).emit('message', {
       message,
       user,
+    });
+
+    const getChatRoomByIdService = makeGetChatRoomByIdService();
+
+    const chatRoom = await getChatRoomByIdService.execute(data.idChatRoom);
+
+    const userFrom = chatRoom.id_users.find((data) => data._id !== user._id);
+
+    io.to(userFrom.socket_id).emit('emitNotification', {
+      newMessage: true,
+      roomId: data.idChatRoom,
+      from: user,
     });
   });
 });
